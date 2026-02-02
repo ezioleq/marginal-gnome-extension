@@ -1,0 +1,9 @@
+{
+    "name": "Marginal",
+    "description": "A simple Gnome Shell command-based window management util",
+    "uuid": "marginal@ezioleq.com",
+    "settings-schema": "org.gnome.shell.extensions.marginal",
+    "shell-version": [
+        "49"
+    ]
+}
