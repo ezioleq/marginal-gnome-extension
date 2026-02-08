@@ -23,19 +23,19 @@ declare interface SearchProvider {
 
   getInitialResultSet(
     terms: string[],
-    callback: (results: string[]) => void,
-  ): void;
+    cancellable: Gio.Cancellable,
+  ): Promise<string[]>;
 
   getSubsearchResultSet(
     previous_results: string[],
     terms: string[],
-    callback: (results: string[]) => void,
-  ): void;
+    cancellable: Gio.Cancellable,
+  ): Promise<string[]>;
 
   getResultMetas(
     resultIds: string[],
-    callback: (results: SearchResultMeta[]) => void,
-  ): void;
+    cancellable: Gio.Cancellable,
+  ): Promise<SearchResultMeta[]>;
 
   activateResult(identifier: string, terms: string[], timestamp: number): void;
   launchSearch(terms: string[], timestamp: number): void;
@@ -53,31 +53,77 @@ export default class CommandSearchProvider implements SearchProvider {
 
   getInitialResultSet(
     terms: string[],
-    callback: (results: string[]) => void,
-  ): void {
-    throw new Error("Method not implemented.");
+    cancellable: Gio.Cancellable,
+  ): Promise<string[]> {
+    console.warn("getInitialResultSet input", terms);
+    var results: string[] = [];
+
+    return new Promise((resolve, reject) => {
+      const cancelledId = cancellable.connect(() =>
+        reject(Error("Search cancelled")),
+      );
+
+      if ("almost".includes(terms.join("").toLowerCase()))
+        results.push("almost");
+
+      cancellable.disconnect(cancelledId);
+      if (!cancellable.is_cancelled()) {
+        console.warn("getInitialResultSet results", results);
+        resolve(results);
+      }
+    });
   }
 
   getSubsearchResultSet(
     previous_results: string[],
     terms: string[],
-    callback: (results: string[]) => void,
-  ): void {
-    throw new Error("Method not implemented.");
+    cancellable: Gio.Cancellable,
+  ): Promise<string[]> {
+    if (cancellable.is_cancelled()) throw Error("Search cancelled");
+
+    return this.getInitialResultSet(terms, cancellable);
   }
 
   getResultMetas(
     resultIds: string[],
-    callback: (results: SearchResultMeta[]) => void,
-  ): void {
-    throw new Error("Method not implemented.");
+    cancellable: Gio.Cancellable,
+  ): Promise<SearchResultMeta[]> {
+    console.warn("getResultMetas input", resultIds);
+
+    return new Promise((resolve, reject) => {
+      const cancelledId = cancellable.connect(() =>
+        reject(Error("Operation cancelled")),
+      );
+
+      const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
+
+      const metas = resultIds.map(
+        (id: string): SearchResultMeta => ({
+          id,
+          name: "Almost maximize",
+          description: "Resize",
+          createIcon: (size: any) => {
+            return new St.Icon({
+              icon_name: "dialog-information",
+              width: size * scaleFactor,
+              height: size * scaleFactor,
+            });
+          },
+          clipboardText: undefined,
+        }),
+      );
+      console.warn("getResultMetas created metas", metas);
+
+      cancellable.disconnect(cancelledId);
+      if (!cancellable.is_cancelled()) resolve(metas);
+    });
   }
 
   activateResult(identifier: string, terms: string[], timestamp: number): void {
-    throw new Error("Method not implemented.");
+    // throw new Error("Method not implemented.");
   }
 
   launchSearch(terms: string[], timestamp: number): void {
-    throw new Error("Method not implemented.");
+    // throw new Error("Method not implemented.");
   }
 }
