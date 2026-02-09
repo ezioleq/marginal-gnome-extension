@@ -32,4 +32,12 @@ export default class ShellExtension extends Extension {
 
     win.move_resize_frame(true, 0, 0, 200, 200);
   }
+
+  getApp() {
+    let settingsApp = Shell.AppSystem.get_default().lookup_app(
+      "org.gnome.Settings.desktop",
+    );
+
+    return settingsApp;
+  }
 }
