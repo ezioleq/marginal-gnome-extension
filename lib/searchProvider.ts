@@ -9,130 +9,62 @@ import ShellExtension from "../extension.js";
 declare interface SearchResultMeta {
   id: string;
   name: string;
-  description?: string;
-  clipboardText?: string;
   createIcon: any;
 }
 
-declare interface SearchProvider {
-  appInfo?: {
-    get_name(): string;
-    get_icon(): any;
-    get_id(): string;
-    should_show(): boolean;
-  } | null;
+// declare interface SearchProvider {
+//   appInfo: any;
 
-  getInitialResultSet(
-    terms: string[],
-    cancellable: Gio.Cancellable,
-  ): Promise<string[]>;
+//   getInitialResultSet(terms: string[]): any;
 
-  getSubsearchResultSet(
-    previous_results: string[],
-    terms: string[],
-    cancellable: Gio.Cancellable,
-  ): Promise<string[]>;
+//   getSubsearchResultSet(previous_results: string[], terms: string[]): any;
 
-  getResultMetas(
-    resultIds: string[],
-    cancellable: Gio.Cancellable,
-  ): Promise<SearchResultMeta[]>;
+//   getResultMetas(
+//     resultIds: string[],
+//     cancellable: Gio.Cancellable,
+//   ): Promise<SearchResultMeta[]>;
 
-  activateResult(identifier: string, terms: string[]): void;
-  launchSearch(terms: string[], timestamp: number): void;
-}
+//   activateResult(identifier: string, terms: string[]): void;
+//   launchSearch(terms: string[], timestamp: number): void;
+// }
 
-export default class CommandSearchProvider implements SearchProvider {
+export default class CommandSearchProvider {
   extension: ShellExtension;
+  appInfo: any;
 
   public constructor(extension: ShellExtension) {
     this.extension = extension;
+    this.appInfo = this.extension.getApp().appInfo;
   }
 
-  appInfo?: null;
+  async getInitialResultSet(terms: string[]) {
+    let results: string[] = [];
 
-  getInitialResultSet(
-    terms: string[],
-    cancellable: Gio.Cancellable,
-  ): Promise<string[]> {
-    console.warn("getInitialResultSet input", terms);
-    var results: string[] = [];
+    if ("almost".includes(terms.join("").toLowerCase())) results.push("almost");
 
-    return new Promise((resolve, reject) => {
-      const cancelledId = cancellable.connect(() =>
-        reject(Error("Search cancelled")),
-      );
-
-      if ("almost".includes(terms.join("").toLowerCase()))
-        results.push("almost");
-
-      cancellable.disconnect(cancelledId);
-      if (!cancellable.is_cancelled()) {
-        console.warn("getInitialResultSet results", results);
-        resolve(results);
-      }
-    });
+    console.info("getInitialResultSet results", results);
+    return results;
   }
 
-  getSubsearchResultSet(
-    previous_results: string[],
-    terms: string[],
-    cancellable: Gio.Cancellable,
-  ): Promise<string[]> {
-    if (cancellable.is_cancelled()) throw Error("Search cancelled");
-
-    return this.getInitialResultSet(terms, cancellable);
+  async getSubsearchResultSet(previous_results: string[], terms: string[]) {
+    return this.getInitialResultSet(terms);
   }
 
-  getResultMetas(
-    resultIds: string[],
-    cancellable: Gio.Cancellable,
-  ): Promise<SearchResultMeta[]> {
-    console.warn("getResultMetas input", resultIds);
-
-    return new Promise((resolve, reject) => {
-      const cancelledId = cancellable.connect(() =>
-        reject(Error("Operation cancelled")),
-      );
-
-      const { scaleFactor } = St.ThemeContext.get_for_stage(global.stage);
-
-      const metas = resultIds.map(
-        (id: string): SearchResultMeta => ({
-          id,
-          name: "Almost maximize",
-          description: "Resize",
-          createIcon: (size: any) => {
-            return new St.Icon({
-              icon_name: "dialog-information",
-              width: size * scaleFactor,
-              height: size * scaleFactor,
-            });
-          },
-          clipboardText: undefined,
-        }),
-      );
-      console.warn("getResultMetas created metas", metas);
-
-      cancellable.disconnect(cancelledId);
-      if (!cancellable.is_cancelled()) resolve(metas);
-    });
+  async getResultMetas(results: string[]) {
+    let app = this.extension.getApp();
+    return results.map((result) => ({
+      id: result,
+      name: result,
+      createIcon: (size: any) => app && app.create_icon_texture(size),
+    }));
   }
 
-  activateResult(identifier: string, terms: string[]): void {
-    console.warn("activateResult", identifier, terms);
+  activateResult(identifier: string): void {
+    console.warn("activateResult", identifier);
     this.extension.sayHello();
   }
 
-  launchSearch(terms: string[], timestamp: number): void {
-    // throw new Error("Method not implemented.");
-  }
-
-  get canLaunchSearch() {
-    return false;
-  }
-
-  get id() {
-    return this.extension.uuid;
+  filterResults(results: any, maxResults: any) {
+    return results.slice(0, maxResults);
   }
 }
