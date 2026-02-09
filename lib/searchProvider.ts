@@ -54,8 +54,10 @@ export default class CommandSearchProvider {
     let app = this.extension.getApp();
     return results.map((result) => ({
       id: result,
-      name: result,
-      createIcon: (size: any) => app && app.create_icon_texture(size),
+      name: "Almost maximize",
+      description: "Almost maximizes the focused window",
+      createIcon: (size: any) =>
+        new St.Icon({ icon_name: "view-restore-symbolic", icon_size: size }),
     }));
   }
 
