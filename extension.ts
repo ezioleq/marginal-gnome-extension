@@ -10,7 +10,7 @@ export default class ShellExtension extends Extension {
   private _provider?: any;
 
   enable() {
-    this._provider = new CommandSearchProvider();
+    this._provider = new CommandSearchProvider(this);
     Main.overview.searchController.addProvider(this._provider);
   }
 
@@ -19,5 +19,17 @@ export default class ShellExtension extends Extension {
       Main.overview.searchController.removeProvider(this._provider);
       this._provider = undefined;
     }
+  }
+
+  sayHello(): void {
+    console.warn("### HELLO ###", "AAAAAA");
+    const win = global.display.focus_window;
+
+    if (!win) {
+      console.warn("window is null or undefined");
+      return;
+    }
+
+    win.move_resize_frame(true, 0, 0, 200, 200);
   }
 }

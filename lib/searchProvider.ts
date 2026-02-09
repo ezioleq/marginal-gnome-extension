@@ -1,5 +1,6 @@
 import St from "gi://St";
 import GObject from "gi://GObject";
+import Shell from "gi://Shell";
 import Gio from "gi://Gio";
 import * as Main from "resource:///org/gnome/shell/ui/main.js";
 import { Extension } from "resource:///org/gnome/shell/extensions/extension.js";
@@ -19,7 +20,7 @@ declare interface SearchProvider {
     get_icon(): any;
     get_id(): string;
     should_show(): boolean;
-  };
+  } | null;
 
   getInitialResultSet(
     terms: string[],
@@ -37,19 +38,18 @@ declare interface SearchProvider {
     cancellable: Gio.Cancellable,
   ): Promise<SearchResultMeta[]>;
 
-  activateResult(identifier: string, terms: string[], timestamp: number): void;
+  activateResult(identifier: string, terms: string[]): void;
   launchSearch(terms: string[], timestamp: number): void;
 }
 
 export default class CommandSearchProvider implements SearchProvider {
-  appInfo?:
-    | {
-        get_name: () => "CommandSearchProvider";
-        get_icon: () => null;
-        get_id: () => "command-search-provider";
-        should_show: () => true;
-      }
-    | undefined;
+  extension: ShellExtension;
+
+  public constructor(extension: ShellExtension) {
+    this.extension = extension;
+  }
+
+  appInfo?: null;
 
   getInitialResultSet(
     terms: string[],
@@ -119,11 +119,20 @@ export default class CommandSearchProvider implements SearchProvider {
     });
   }
 
-  activateResult(identifier: string, terms: string[], timestamp: number): void {
-    // throw new Error("Method not implemented.");
+  activateResult(identifier: string, terms: string[]): void {
+    console.warn("activateResult", identifier, terms);
+    this.extension.sayHello();
   }
 
   launchSearch(terms: string[], timestamp: number): void {
     // throw new Error("Method not implemented.");
+  }
+
+  get canLaunchSearch() {
+    return false;
+  }
+
+  get id() {
+    return this.extension.uuid;
   }
 }
