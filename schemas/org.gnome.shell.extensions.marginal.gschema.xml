@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schemalist>
+    <schema id="org.gnome.shell.extensions.marginal" path="/org/gnome/shell/extensions/marginal/">
+        <key name="margin-size" type="i">
+            <default>200</default>
+            <summary>Outer margin</summary>
+            <description>Margin size in pixels</description>
+        </key>
+    </schema>
+</schemalist>
