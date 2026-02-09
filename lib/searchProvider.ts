@@ -1,64 +1,67 @@
 import St from "gi://St";
-import GObject from "gi://GObject";
-import Shell from "gi://Shell";
 import Gio from "gi://Gio";
 import * as Main from "resource:///org/gnome/shell/ui/main.js";
 import { Extension } from "resource:///org/gnome/shell/extensions/extension.js";
 import ShellExtension from "../extension.js";
 
-declare interface SearchResultMeta {
+declare interface ResultMeta {
   id: string;
   name: string;
-  createIcon: any;
+  description?: string;
+  createIcon(size: number): St.Icon;
 }
 
-// declare interface SearchProvider {
-//   appInfo: any;
+declare interface SearchProvider {
+  appInfo: Gio.DesktopAppInfo;
 
-//   getInitialResultSet(terms: string[]): any;
+  getInitialResultSet(terms: string[]): Promise<string[]>;
 
-//   getSubsearchResultSet(previous_results: string[], terms: string[]): any;
+  getSubsearchResultSet(
+    previous_results: string[],
+    terms: string[],
+  ): Promise<string[]>;
 
-//   getResultMetas(
-//     resultIds: string[],
-//     cancellable: Gio.Cancellable,
-//   ): Promise<SearchResultMeta[]>;
+  getResultMetas(results: string[]): Promise<ResultMeta[]>;
 
-//   activateResult(identifier: string, terms: string[]): void;
-//   launchSearch(terms: string[], timestamp: number): void;
-// }
+  activateResult(identifier: string): void;
 
-export default class CommandSearchProvider {
+  filterResults(results: string[], maxResults: number): string[];
+}
+
+export default class ActionSearchProvider implements SearchProvider {
   extension: ShellExtension;
-  appInfo: any;
+  appInfo: Gio.DesktopAppInfo;
 
   public constructor(extension: ShellExtension) {
     this.extension = extension;
     this.appInfo = this.extension.getApp().appInfo;
   }
 
-  async getInitialResultSet(terms: string[]) {
+  async getInitialResultSet(terms: string[]): Promise<string[]> {
     let results: string[] = [];
 
     if ("almost".includes(terms.join("").toLowerCase())) results.push("almost");
 
-    console.info("getInitialResultSet results", results);
     return results;
   }
 
-  async getSubsearchResultSet(previous_results: string[], terms: string[]) {
+  async getSubsearchResultSet(
+    previous_results: string[],
+    terms: string[],
+  ): Promise<string[]> {
     return this.getInitialResultSet(terms);
   }
 
-  async getResultMetas(results: string[]) {
-    let app = this.extension.getApp();
-    return results.map((result) => ({
-      id: result,
-      name: "Almost maximize",
-      description: "Almost maximizes the focused window",
-      createIcon: (size: any) =>
-        new St.Icon({ icon_name: "view-restore-symbolic", icon_size: size }),
-    }));
+  async getResultMetas(results: string[]): Promise<ResultMeta[]> {
+    return results.map(
+      (result: string): ResultMeta => ({
+        id: result,
+        name: "Almost maximize",
+        description: "Almost maximizes the focused window",
+        createIcon: (size: any) =>
+          new St.Icon({ icon_name: "view-restore-symbolic", icon_size: size }),
+      }),
+    );
   }
 
   activateResult(identifier: string): void {
@@ -66,7 +69,7 @@ export default class CommandSearchProvider {
     this.extension.sayHello();
   }
 
-  filterResults(results: any, maxResults: any) {
+  filterResults(results: string[], maxResults: number): string[] {
     return results.slice(0, maxResults);
   }
 }
