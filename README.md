@@ -26,5 +26,6 @@ The archive can be directly installed via `gnome-extensions install` command.
 
 ### Notes
 
-- For now, icons to use can be found in `/usr/share/icons/Adwaita/symbolic`.
-- App infos can be looked up from `/usr/share/applications/`.
+- Nested session can be run with `SHELL_DEBUG=all dbus-run-session gnome-shell --devkit --wayland`
+- For now, icons to use can be found in `/usr/share/icons/Adwaita/symbolic`
+- App infos can be looked up from `/usr/share/applications/`
