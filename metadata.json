@@ -1,8 +1,9 @@
 {
     "name": "Marginal",
-    "description": "A simple Gnome Shell command-based window management util",
+    "description": "Use actions from the overview search menu to resize and move windows.",
     "uuid": "marginal@ezioleq.com",
     "settings-schema": "org.gnome.shell.extensions.marginal",
+    "url": "https://github.com/ezioleq/marginal-gnome-extension",
     "shell-version": [
         "49"
     ]
