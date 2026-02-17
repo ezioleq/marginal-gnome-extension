@@ -18,16 +18,21 @@ export default class ShellExtension extends Extension {
     }
   }
 
-  sayHello(): void {
-    console.warn("### HELLO ###", "AAAAAA");
+  almostMaximize(): void {
     const win = global.display.focus_window;
 
-    if (!win) {
-      console.warn("window is null or undefined");
-      return;
-    }
+    if (!win) return;
 
-    win.move_resize_frame(true, 0, 0, 200, 200);
+    const margin = 200;
+    const workArea = win.get_work_area_for_monitor(win.get_monitor());
+
+    win.move_resize_frame(
+      true,
+      workArea.x + margin,
+      workArea.y + margin,
+      workArea.width - margin * 2,
+      workArea.height - margin * 2,
+    );
   }
 
   getApp() {

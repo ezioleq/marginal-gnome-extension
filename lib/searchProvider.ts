@@ -150,7 +150,7 @@ export default class ActionSearchProvider implements SearchProvider {
 
   /** @inheritdoc */
   activateResult(identifier: string): void {
-    this.extension.sayHello();
+    this.extension.almostMaximize();
   }
 
   /** @inheritdoc */
