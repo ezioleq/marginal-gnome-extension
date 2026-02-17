@@ -9,6 +9,15 @@ Use actions from the overview search menu to resize and move windows.
 > [!WARNING]
 > The project is under heavy development and expect things to break.
 
+### Features
+
+Some of the example actions you can perform via the overview search:
+
+- [x] Almost maximize window
+- [ ] Maximize window
+- [ ] Move window to left
+- [ ] Move window to right
+
 ## Installation
 
 To be announced 😳
