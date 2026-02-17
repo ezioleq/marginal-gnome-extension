@@ -4,6 +4,7 @@
     "uuid": "marginal@ezioleq.com",
     "settings-schema": "org.gnome.shell.extensions.marginal",
     "url": "https://github.com/ezioleq/marginal-gnome-extension",
+    "version-name": "0.1.0-prototype",
     "shell-version": [
         "49"
     ]
