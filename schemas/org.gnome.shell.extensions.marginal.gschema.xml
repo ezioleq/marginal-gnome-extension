@@ -2,7 +2,7 @@
 <schemalist>
     <schema id="org.gnome.shell.extensions.marginal" path="/org/gnome/shell/extensions/marginal/">
         <key name="margin-size" type="i">
-            <default>200</default>
+            <default>128</default>
             <summary>Outer margin</summary>
             <description>Margin size in pixels</description>
         </key>

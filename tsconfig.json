@@ -18,6 +18,7 @@
     ],
     "files": [
         "extension.ts",
+        "prefs.ts",
         "lib/searchProvider.ts"
     ],
 }
